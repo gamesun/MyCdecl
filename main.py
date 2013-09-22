@@ -35,15 +35,14 @@ import wx
 import os
 import re
 
+QUALIFIER = ("const", "volatile", "signed", "unsigned")
+BASICTYPE = ("void", "char", "short", "int", "long", 
+        "float", "double", "struct", "enum", "union")
 
-QUALIFIER = ( "const", "volatile", "signed", "unsigned" )
-BASICTYPE = (  "void", "char", "short", "int", "long", 
-               "float", "double", "struct", "enum", "union")
-
-regex_matchEnum = re.compile(r'enum[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
-regex_matchUnion = re.compile(r'union[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
+regex_matchEnum   = re.compile(r'enum[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
+regex_matchUnion  = re.compile(r'union[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
 regex_matchStruct = re.compile(r'struct[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
-regex_matchType = re.compile(r'typedef\s.*?(?P<type>\w+);')
+regex_matchType   = re.compile(r'typedef\s.*?(?P<type>\w+);')
 
 
 class MyApp(wx.App):
@@ -66,60 +65,25 @@ class MyApp(wx.App):
                         
         # do dir,get a list
         filelist = (
-            "test.h",
+            "test.h", "test2.h",
             )
 
-        result = [['enum',],
-                  ['union',],
-                  ['srtuct',],
-                  ['type',]]
+        result = [['enum', []], 
+                  ['union', []],
+                  ['srtuct', []],
+                  ['type', []]]
         
         for fl in filelist:
             f = open(path + "\\" + fl, "rb")
             string = f.read()
             f.close()
-            result[0] += [regex_matchEnum.findall(string)]
-            result[1] += [regex_matchUnion.findall(string)]
-            result[2] += [regex_matchStruct.findall(string)]
-            result[3] += [regex_matchType.findall(string)]
+            result[0][1] += regex_matchEnum.findall(string)
+            result[1][1] += regex_matchUnion.findall(string)
+            result[2][1] += regex_matchStruct.findall(string)
+            result[3][1] += regex_matchType.findall(string)
 
         result[3][1] += BASICTYPE
         return result
-# 
-#     def FindEnumDecl(self, string):
-#         """ return ['type1', 'type2', ...] in the string """
-#         result = []
-#         r = regex_matchEnum.findall(string)
-#         if r:
-#             result.append(r)
-#         return result
-# 
-#     def FindUnionDecl(self, string):
-#         """ return ['type1', 'type2', ...] in the string """
-#         result = []
-#         r = regex_matchUnion.findall(string)
-#         if r:
-#             result.append(r)
-#         return result
-#         
-#     def FindStructDecl(self, string):
-#         """ return ['type1', 'type2', ...] in the string """
-#         result = []
-#         r = regex_matchStruct.findall(string)
-#         if r:
-#             result.append(r)
-#         return result
-#     
-#     def FindTypeDecl(self, string):
-#         """ return ['type1', 'type2', ...] in the string """
-#         result = []
-#         r = regex_matchType.findall(string)
-#         if r:
-#             result.append(r)
-#         return result
-
-
-        
 
 if __name__ == '__main__':
     app = MyApp(0)
