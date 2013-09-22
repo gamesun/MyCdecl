@@ -6,6 +6,12 @@ typedef signed short	sshort;
 typedef unsigned long	ulong;
 typedef signed long		slong;
 
+typedef enum {
+	E_0 = 0,
+	E_1,
+} EEE;
+
+
 typedef union _AAA{
 	unsigned short	us;
 	struct {
