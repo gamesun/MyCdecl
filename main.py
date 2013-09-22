@@ -40,10 +40,9 @@ BASICTYPE = ("void", "char", "short", "int", "long",
         "float", "double", "struct", "enum", "union")
 
 regex_matchEnum   = re.compile(r'enum[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
-regex_matchUnion  = re.compile(r'union[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
+regex_matchUnion  = re.compile(r'union[\s\S]*?\{(?:[^{}]|\{[^{}]*\})*\}\s(?P<enum>\w+)')
 regex_matchStruct = re.compile(r'struct[\s\S]*?\{[\s\S]*?\}\s(?P<enum>\w+)')
 regex_matchType   = re.compile(r'typedef\s.*?(?P<type>\w+);')
-
 
 class MyApp(wx.App):
     def OnInit(self):
@@ -55,32 +54,35 @@ class MyApp(wx.App):
 
     def DeclarationAnalysis(self, path):
         typeDecl = self.GetTypeDecl(path)
-        print typeDecl
+        print typeDecl[0]
+        print typeDecl[1]
+        print typeDecl[2]
+        print typeDecl[3]
     
     def GetTypeDecl(self, path):
         """ return as [ (enum,(,,,)),
                 (union,(,,,)),
                 (struct,(,,,)),
                 [type,[,,,]] ] """
-                        
-        # do dir,get a list
-        filelist = (
-            "test.h", "test2.h",
-            )
 
         result = [['enum', []], 
                   ['union', []],
                   ['srtuct', []],
                   ['type', []]]
-        
-        for fl in filelist:
-            f = open(path + "\\" + fl, "rb")
-            string = f.read()
-            f.close()
-            result[0][1] += regex_matchEnum.findall(string)
-            result[1][1] += regex_matchUnion.findall(string)
-            result[2][1] += regex_matchStruct.findall(string)
-            result[3][1] += regex_matchType.findall(string)
+                                
+        # do dir,get a list
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                extension = os.path.splitext(filename)[1] 
+                if extension == '.h' or extension == '.c':
+                    filepath = os.path.join(dirpath, filename)
+                    f = open(filepath, "rb")
+                    string = f.read()
+                    f.close()
+                    result[0][1] += regex_matchEnum.findall(string)
+                    result[1][1] += regex_matchUnion.findall(string)
+                    result[2][1] += regex_matchStruct.findall(string)
+                    result[3][1] += regex_matchType.findall(string)
 
         result[3][1] += BASICTYPE
         return result
