@@ -18,9 +18,17 @@ typedef union _AAA{
 		unsigned char	uc1;
 		unsigned char	uc2;
 	} sss;
+	struct {
+		unsigned char	uc1;
+		unsigned char	uc2;
+	} sss2;
+	struct {
+		unsigned char	uc1;
+		unsigned char	uc2;
+	} sss3;
 } AAA;
 
-typedef struct	_BBB{
+typedef struct _BBB{
 	unsigned char	b0:1;
 	unsigned char	b1:1;
 	unsigned char	b2:1;
@@ -35,3 +43,27 @@ typedef union _CCC{
 	BBB		bbb;
 	uchar	byte;
 } CCC;
+
+
+struct DDD{
+	unsigned char	b0;
+};
+struct DDD  stD1, stD2;
+
+
+#define eee struct EEE
+eee {
+	unsigned char e;
+};
+eee stE1, stE2;
+
+
+struct FFF{
+	unsigned char	b0;
+}stF1, stF2;
+
+
+
+
+
+
