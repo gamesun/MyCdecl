@@ -53,13 +53,47 @@ class MyApp(wx.App):
         return True
 
     def DeclarationAnalysis(self, path):
-        typeDecl = self.GetTypeDecl(path)
+        typeDecl = self.FindAllTypeDecl(path)
         print typeDecl[0]
         print typeDecl[1]
         print typeDecl[2]
         print typeDecl[3]
+        print
+        
+        variableList = self.FindAllVariable(path, typeDecl)
+        print variableList[0]
+        print variableList[1]
+        print variableList[2]
+        print variableList[3]
     
-    def GetTypeDecl(self, path):
+    def FindAllVariable(self, path, typeDecl):
+        """ return as []
+        """
+        variableList = [['enum', []], 
+                        ['union', []],
+                        ['srtuct', []],
+                        ['type', []]]
+        
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                extension = os.path.splitext(filename)[1] 
+                if extension == '.h' or extension == '.c':
+                    filepath = os.path.join(dirpath, filename)
+                    f = open(filepath, "rb")
+                    string = f.read()
+                    f.close()
+                    for e in typeDecl[0][1]:
+                        variableList[0][1] += re.findall('%s\s+(\w+);' % e, string) 
+                    for u in typeDecl[1][1]:
+                        variableList[1][1] += re.findall('%s\s+(\w+);' % u, string)                 
+                    for s in typeDecl[2][1]:
+                        variableList[2][1] += re.findall('%s\s+(\w+);' % s, string)
+                    for t in typeDecl[3][1]:
+                        variableList[3][1] += re.findall('%s\s+(\w+);' % t, string)
+        
+        return variableList
+    
+    def FindAllTypeDecl(self, path):
         """ return as [ (enum,(,,,)),
                 (union,(,,,)),
                 (struct,(,,,)),
@@ -70,7 +104,6 @@ class MyApp(wx.App):
                   ['srtuct', []],
                   ['type', []]]
                                 
-        # do dir,get a list
         for dirpath, dirnames, filenames in os.walk(path):
             for filename in filenames:
                 extension = os.path.splitext(filename)[1] 
